@@ -27,7 +27,7 @@ const DarkModeSwitch = () => {
     const themeConfig = createMuiTheme(theme);
     console.log(themeConfig);
     return (
-        <MuiThemeProvider theme={themeConfig}>
+        <MuiThemeProvider theme={themeConfig}> // This is the theme I want to update on App.js when clicking the switch
             <Tooltip title='Toggle dark mode'>
                 <FormControlLabel control={<Switch
                     onClick={toggleDarkMode}
