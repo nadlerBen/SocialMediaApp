@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import PropTypes from 'prop-types';
-import MyButton from '../util/MyButton';
+import MyButton from '../../util/MyButton';
 import DeletePost from './DeletePost';
 import PostDialog from './PostDialog';
 import LikeButton from "./LikeButton";
@@ -73,7 +73,7 @@ class Post extends Component {
                             <ChatIcon color='primary'/>
                         </MyButton>
                         <span>{commentCount} Comments</span>
-                        <PostDialog postId={postId} userHandle={userHandle}/>
+                        <PostDialog postId={postId} userHandle={userHandle} openDialog={this.props.openDialog}/>
                     </CardContent>
             </Card>
         );
@@ -83,7 +83,8 @@ class Post extends Component {
 Post.propTypes = {
     user: PropTypes.object.isRequired,
     post: PropTypes.object.isRequired,
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
+    openDialog: PropTypes.bool
 };
 
 const mapStateToProps = (state) => ({

@@ -1,10 +1,12 @@
 import React, {Component, Fragment} from 'react';
 import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
-import MyButton from '../util/MyButton';
+import MyButton from '../../util/MyButton';
 import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
 import LikeButton from "./LikeButton";
+import Comments from './Comments';
+import CommentForm from './CommentForm';
 
 //MUI stuff
 import Dialog from '@material-ui/core/Dialog';
@@ -19,17 +21,14 @@ import UnfoldMore from '@material-ui/icons/UnfoldMore';
 
 //Redux stuff
 import { connect } from 'react-redux';
-import { getPost } from "../redux/actions/dataActions";
+import { getPost, clearErrors } from "../../redux/actions/dataActions";
 import ChatIcon from "@material-ui/icons/Chat";
 
 const styles = theme => ({
     ...theme.spread,
-    invisibleSeparator: {
-        border: 'None',
-        margin: 4
-    },
     profileImage: {
         maxWidth: 200,
+        width: 200,
         height: 200,
         borderRadius: '50%',
         objectFit: 'cover'
@@ -54,17 +53,43 @@ const styles = theme => ({
 
 class PostDialog extends Component {
     state = {
-        open: false
+        open: false,
+        oldPath: '',
+        newPath: ''
+    };
+    componentDidMount() {
+        if(this.props.openDialog) {
+            this.handleOpen();
+        }
     };
     handleOpen = () => {
-      this.setState({ open: true });
+      let oldPath = window.location.pathname;
+      const { userHandle, postId } = this.props;
+      const newPath = `/users/${userHandle}/post/${postId}`;
+
+      if(oldPath === newPath) oldPath = `users/${userHandle}`;
+
+      window.history.pushState(null, null, newPath);
+
+      this.setState({ open: true, oldPath, newPath });
       this.props.getPost(this.props.postId);
     };
     handleClose = () => {
+        window.history.pushState(null, null, this.state.oldPath);
         this.setState({ open: false });
+        this.props.clearErrors();
     };
     render() {
-        const { classes, post: {postId, body, createdAt, likeCount, commentCount, userImage, userHandle},
+        const { classes, post: {
+            postId,
+            body,
+            createdAt,
+            likeCount,
+            commentCount,
+            userImage,
+            userHandle,
+            comments
+        },
         UI: { loading }
         } = this.props;
         const dialogMarkup = loading ? (
@@ -100,6 +125,9 @@ class PostDialog extends Component {
                     </MyButton>
                     <span>{commentCount} Comments</span>
                 </Grid>
+                <hr className={classes.visibleSeparator}/>
+                <CommentForm postId={postId}/>
+                <Comments comments={comments}/>
             </Grid>
         );
         return(
@@ -129,6 +157,7 @@ class PostDialog extends Component {
 }
 
 PostDialog.propTypes = {
+    clearErrors: PropTypes.func.isRequired,
     getPost: PropTypes.func.isRequired,
     postId: PropTypes.string.isRequired,
     userHandle: PropTypes.string.isRequired,
@@ -142,7 +171,8 @@ const mapStateToProps = state => ({
 });
 
 const mapActionsToProps = {
-    getPost
+    getPost,
+    clearErrors
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(PostDialog));
