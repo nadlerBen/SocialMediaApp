@@ -1,4 +1,12 @@
 Full Stack fully featured social media app using React, Firebase, Redux, Express and Material-UI.
+Can be viewed here:
+https://socialmediaapp-11964.firebaseapp.com/
+
+Login with:
+```
+User: user@email.com
+Password: 123456
+```
 
 ## Available Scripts
 
